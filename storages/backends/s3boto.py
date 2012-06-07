@@ -121,7 +121,7 @@ def _parse_datestring(dstr):
 class S3BotoStorage(Storage):
     """
     Amazon Simple Storage Service using Boto
-    
+
     This storage backend supports opening files in read or write
     mode and supports streaming(buffering) data in chunks to S3
     when writing.
@@ -160,7 +160,7 @@ class S3BotoStorage(Storage):
             access_key, secret_key = self._get_access_keys()
 
         self.connection = S3Connection(access_key, secret_key,
-            calling_format=calling_format)
+            calling_format=calling_format, host='s3-eu-west-1.amazonaws.com')
         self._entries = {}
 
     @property
@@ -186,7 +186,7 @@ class S3BotoStorage(Storage):
     def _get_access_keys(self):
         """
         Gets the access keys to use when accessing S3. If none
-        are provided to the class in the constructor or in the 
+        are provided to the class in the constructor or in the
         settings then get them from the environment variables.
         """
         access_key = ACCESS_KEY_NAME
@@ -353,7 +353,7 @@ class S3BotoStorage(Storage):
 class S3BotoStorageFile(File):
     """
     The default file object used by the S3BotoStorage backend.
-    
+
     This file implements file streaming using boto's multipart
     uploading functionality. The file can be opened in read or
     write mode.
@@ -368,7 +368,7 @@ class S3BotoStorageFile(File):
     in your application.
     """
     # TODO: Read/Write (rw) mode may be a bit undefined at the moment. Needs testing.
-    # TODO: When Django drops support for Python 2.5, rewrite to use the 
+    # TODO: When Django drops support for Python 2.5, rewrite to use the
     #       BufferedIO streams in the Python 2.6 io module.
 
     def __init__(self, name, mode, storage, buffer_size=FILE_BUFFER_SIZE):
@@ -383,7 +383,7 @@ class S3BotoStorageFile(File):
         self._multipart = None
         # 5 MB is the minimum part size (if there is more than one part).
         # Amazon allows up to 10,000 parts.  The default supports uploads
-        # up to roughly 50 GB.  Increase the part size to accommodate 
+        # up to roughly 50 GB.  Increase the part size to accommodate
         # for files larger than this.
         self._write_buffer_size = buffer_size
         self._write_counter = 0
